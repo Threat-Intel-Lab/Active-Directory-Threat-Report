@@ -125,15 +125,15 @@ To reduce the risk of Active Directory exploitation, implement the following sec
 
 1. Enforce Least Privilege Access.
 2. Deploy LAPS (Local Administrator Password Solution).
-3. **Implement Windows Defender Credential Guard.
-4. **Monitor for Kerberoasting and DCSync attempts.**
-5. **Conduct regular Active Directory Security Assessments.**
+3. Implement Windows Defender Credential Guard.
+4. Monitor for Kerberoasting and DCSync attempts.
+5. Conduct regular Active Directory Security Assessments.
 
 ---
 
 Conclusion
 
-This report demonstrates how Active Directory environments can be compromised through **Kerberoasting, NTDS.dit extraction, and Pass-the-Hash attacks.** These techniques are heavily leveraged by **advanced threat actors (ATAs)** and nation-state attackers.
+This report demonstrates how Active Directory environments can be compromised through Kerberoasting, NTDS.dit extraction, and Pass-the-Hash attacks. These techniques are heavily leveraged by advanced threat actors (ATAs) and nation-state attackers.
 
 By adopting the mitigation strategies outlined in this report, organizations can significantly reduce the risk of domain compromise.
 
