@@ -1,0 +1,146 @@
+💀 Active Directory Threat Research Report
+
+### 🚀 Conducted by: Jason Bayne  
+### 💻 Organization: **Threat Intel Lab**  
+### 📅 Date: March 18 2025
+
+---
+
+Executive Summary
+
+This report outlines the exploitation techniques used against **Active Directory (AD) environments**, focusing on **Kerberoasting, NTDS.dit Extraction, and Pass-the-Hash (PTH) attacks**. The goal is to simulate **real-world attacks** performed by advanced threat actors (ATAs) and provide actionable mitigation strategies for defending against these techniques.
+
+The research includes:
+- ✅ Real-world attack demonstrations.
+- ✅ MITRE ATT&CK TTP (Tactics, Techniques, and Procedures) mapping.
+- ✅ Detailed proof-of-concept (PoC) exploitation examples.
+- ✅ Defensive strategies and mitigations.
+
+---
+
+Active Directory Exploitation Techniques
+
+## 1. **Kerberoasting Attack (T1558.003)**
+
+**Objective:** Steal plaintext credentials of Active Directory users by requesting service tickets and cracking their associated NTLM hashes.
+
+**TTP:**
+- **Tactic:** Credential Access.
+- **Technique:** Kerberoasting (T1558.003).
+
+**Attack Flow:**
+1. **Request a service ticket (TGS) from the KDC.**
+2. Extract the NTLM hash from the ticket.
+3. Attempt to crack the hash offline.
+
+**PoC Attack:**
+```powershell
+# Request SPNs with vulnerable accounts
+GetUserSPNs.py -request -dc-ip [DomainControllerIP] [DOMAIN]/[User]:[Password]
+
+# Crack the hash using Hashcat
+hashcat -m 13100 hash.txt rockyou.txt --force
+```
+
+**Outcome:**
+If successful, the attacker obtains plaintext credentials for Active Directory service accounts.
+
+**Mitigation:**
+- Enforce strong, complex service account passwords.
+- Enable AES encryption on service tickets.
+- Regularly rotate service account passwords.
+
+---
+
+### 2. **NTDS.dit Extraction (T1003)**
+
+**Objective:** Exfiltrate the entire Active Directory user database (NTDS.dit) to gain domain admin access.
+
+**TTP:**
+- **Tactic:** Credential Dumping.
+- **Technique:** NTDS.dit Extraction (T1003).
+
+**Attack Flow:**
+1. Gain administrative privileges.
+2. Dump the NTDS.dit file from the domain controller.
+3. Extract all user hashes.
+
+**PoC Attack:**
+```powershell
+# Use secretsdump to extract NTDS.dit
+secretsdump.py [DOMAIN]/[User]:[Password]@[DomainControllerIP]
+```
+
+**Outcome:**
+The attacker gains access to **ALL domain user hashes.**
+
+**Mitigation:**
+- Use LAPS (Local Administrator Password Solution).
+- Monitor for suspicious DCSync behavior.
+- Implement tiered administration models.
+
+---
+
+### 3. **Pass-the-Hash (PTH) Attack (T1550)**
+
+**Objective:** Use stolen NTLM hashes to authenticate without cracking passwords.
+
+**TTP:**
+- **Tactic:** Lateral Movement.
+- **Technique:** Pass-the-Hash (T1550).
+
+**Attack Flow:**
+1. Extract NTLM hashes from memory (via LSASS dump).
+2. Use the hash to authenticate without the password.
+
+**PoC Attack:**
+```bash
+# Pass-the-Hash using psexec
+psexec.py -hashes [NTLM-Hash] [User]@[TargetMachine]
+```
+
+**Outcome:**
+The attacker can laterally move across the network without valid passwords.
+
+**Mitigation:**
+- Enforce Local Administrator Password Solution (LAPS).
+- Implement Windows Defender Credential Guard.
+- Regularly audit domain controller event logs.
+
+---
+
+## 💣 MITRE ATT&CK Mapping
+
+| Technique              | Tactic                    | Description                                                   |
+|-----------------------|--------------------------|---------------------------------------------------------------|
+| Kerberoasting (T1558.003) | Credential Access        | Steal service account credentials.                           |
+| NTDS.dit Extraction (T1003) | Credential Dumping     | Extract all domain user hashes.                              |
+| Pass-the-Hash (T1550) | Lateral Movement          | Use NTLM hashes for remote authentication.                   |
+
+---
+
+##  Defensive Recommendations
+
+To reduce the risk of Active Directory exploitation, implement the following security measures:
+
+1. **Enforce Least Privilege Access.**
+2. **Deploy LAPS (Local Administrator Password Solution).**
+3. **Implement Windows Defender Credential Guard.**
+4. **Monitor for Kerberoasting and DCSync attempts.**
+5. **Conduct regular Active Directory Security Assessments.**
+
+---
+
+##  Conclusion
+
+This report demonstrates how Active Directory environments can be compromised through **Kerberoasting, NTDS.dit extraction, and Pass-the-Hash attacks.** These techniques are heavily leveraged by **advanced threat actors (ATAs)** and nation-state attackers.
+
+By adopting the mitigation strategies outlined in this report, organizations can significantly reduce the risk of domain compromise.
+
+**Research Conducted by:** Jason Bayne 
+**GitHub:** github.com/Threat-Intel-Lab/
+**LinkedIn:** https://www.linkedin.com/in/jason-bayne-a22564176/
+
+---
+
+**Threat Intel Lab — Protecting Infrastructure, One Report At A Time.**
