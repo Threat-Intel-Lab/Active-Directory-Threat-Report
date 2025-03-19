@@ -1,0 +1,74 @@
+**Active Directory Attack Methods: A Checklist for Penetration Testers and Administrators**
+
+## 1. Enumeration
+**Objective:** Gather intelligence on users, groups, and misconfigurations within Active Directory.
+- Enumerate users and groups using:
+  - `ldapsearch`, PowerView (`Get-NetUser`, `Get-NetGroup`)
+  - BloodHound (`SharpHound` collection)
+- Identify accessible network shares:
+  - `net share`, `smbclient`, `Invoke-ShareFinder`
+- Discover service principal names (SPNs):
+  - `setspn -T <domain> -Q */*`
+  - `Get-NetSPN`
+- Identify misconfigured ACLs:
+  - `Invoke-ACLScanner`
+  - BloodHound analysis
+
+## 2. Initial Access
+**Objective:** Gain a foothold in the domain.
+- Credential-based attacks:
+  - Phishing (mails, macros, fake login portals)
+  - Credential dumping (`Mimikatz`, `rubeus dump`)
+- Exploit weak passwords:
+  - Password spraying (`CrackMapExec`, `kerbrute`)
+  - Bruteforcing (`Hydra`, `Medusa`)
+- Abusing misconfigured services:
+  - Unquoted service paths
+  - Weak permission on service binaries (`sc qc <service>`)
+  
+## 3. Lateral Movement
+**Objective:** Move within the network while maintaining access.
+- NTLM relay attacks (`Responder`, `Inveigh`)
+- Pass-the-Hash (`Mimikatz sekurlsa::pth`)
+- Pass-the-Ticket (`Rubeus ptt`)
+- Overpass-the-Hash (`Mimikatz sekurlsa::logonpasswords`)
+- Kerberoasting (`GetUserSPNs.py`, `Rubeus kerberoast`)
+- Abusing unconstrained delegation (`Get-DomainComputer -Unconstrained`)
+
+## 4. Privilege Escalation
+**Objective:** Gain higher privileges within the domain.
+- Exploiting misconfigured Group Policies (`Invoke-GPOEnum`)
+- Exploiting ACL misconfigurations (`BloodHound` ACL path analysis)
+- DCSync attack (`Mimikatz lsadump::dcsync`)
+- DCShadow attack (`Mimikatz lsadump::dcshadow`)
+- Privileged group exploitation:
+  - Domain Admins (`Get-NetGroupMember -GroupName 'Domain Admins'`)
+  - Enterprise Admins (`Get-NetGroupMember -GroupName 'Enterprise Admins'`)
+
+## 5. Domain Persistence & Control
+**Objective:** Maintain long-term access and domain dominance.
+- Golden Ticket (`Mimikatz kerberos::golden`)
+- Silver Ticket (`Mimikatz kerberos::silver`)
+- Skeleton Key (`Mimikatz misc::skeleton`)
+- AdminSDHolder abuse (`Invoke-AdminSDHolderBackdoor`)
+- Creating backdoors via:
+  - Malicious GPOs
+  - SIDHistory injection (`Mimikatz sid::add`)
+
+## 6. Defensive Considerations
+**Objective:** Implement mitigation strategies and detection mechanisms.
+- Harden authentication mechanisms:
+  - Enforce strong password policies
+  - Implement MFA where possible
+- Monitor key attack indicators:
+  - Unusual Kerberos ticket activity
+  - Suspicious logon patterns
+- Restrict lateral movement:
+  - Disable NTLM where possible
+  - Limit admin privileges
+- Respond to incidents effectively:
+  - Implement real-time alerting (SIEM solutions)
+  - Conduct regular AD security audits
+
+---
+This checklist provides a structured approach for both attackers and defenders to understand Active Directory threats. By following these steps, penetration testers can assess AD security posture, while administrators can proactively harden their environments.
