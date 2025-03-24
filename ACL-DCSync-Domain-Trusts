@@ -1,0 +1,88 @@
+Title: Advanced Active Directory Attacks: Exploiting ACLs, DCSync, and Domain Trusts
+
+Abstract:Active Directory (AD) remains a prime target for attackers due to its central role in enterprise authentication and authorization. This paper explores three advanced attack techniques—Access Control List (ACL) exploitation, DCSync attacks, and Domain Trust abuses. By understanding these techniques, penetration testers and security professionals can better assess and defend AD environments against real-world threats.
+
+1. Introduction
+
+Active Directory is the backbone of identity management in Windows environments. Attackers often leverage misconfigurations and inherent design weaknesses to escalate privileges and move laterally. This paper details three powerful attack vectors that, if left unchecked, can lead to complete domain compromise.
+
+2. Access Control List (ACL) Exploitation
+
+2.1 Overview
+
+ACLs define permissions for objects within AD, controlling access to users, groups, and resources. Weak ACL configurations can allow attackers to gain unauthorized access or escalate privileges.
+
+2.2 Attack Techniques
+
+Abusing GenericAll and GenericWrite Permissions: Attackers with these permissions over an object can modify group membership or user attributes, leading to privilege escalation.
+
+Shadow Credentials & Key Credential Link (KCL) Attacks: Attackers exploit misconfigured ACLs to inject authentication keys and take over accounts.
+
+Modifying GPOs: If an attacker can edit Group Policy Objects, they can push malicious scripts or settings to multiple machines.
+
+2.3 Detection & Mitigation
+
+Regularly audit ACL configurations using tools like BloodHound.
+
+Implement the principle of least privilege (PoLP) for AD object permissions.
+
+Monitor for unauthorized ACL modifications via SIEM solutions.
+
+3. DCSync Attack
+
+3.1 Overview
+
+DCSync is an attack where a compromised account with Replicating Directory Changes All permission can request password hashes from a domain controller, effectively mimicking a domain controller.
+
+3.2 Attack Execution
+
+Identifying Target Accounts: Attackers use tools like BloodHound to find accounts with replication rights.
+
+Performing the DCSync Attack: Using Mimikatz (lsadump::dcsync), attackers extract NTLM hashes of domain users, including Domain Admins.
+
+Persistence via Golden Ticket Attack: Extracted NTLM hashes can be used for long-term persistence by forging Kerberos tickets.
+
+3.3 Detection & Mitigation
+
+Restrict replication rights to only necessary accounts (default: Domain Controllers).
+
+Enable logging for Directory Service Replication Events (Event ID 4662, 4742).
+
+Deploy AD monitoring tools like Purple Knight or ATA/Defender for Identity.
+
+4. Attacking Domain Trusts
+
+4.1 Overview
+
+In multi-domain or multi-forest environments, Domain Trusts allow users from one domain to authenticate in another. Attackers can exploit misconfigured trusts to pivot between domains.
+
+4.2 Attack Techniques
+
+Cross-Domain Kerberoasting: Extracting service account hashes from a trusted domain and cracking them offline.
+
+Forging Inter-Realm TGTs (Golden Ticket in a Trust Relationship): Attackers create a forged TGT that allows access across trusted domains.
+
+SID History & AdminSDHolder Attacks: Exploiting legacy account attributes to gain privileged access in a trusted domain.
+
+4.3 Detection & Mitigation
+
+Audit trust relationships and remove unnecessary domain trusts.
+
+Monitor for unusual authentication requests across domain boundaries.
+
+Restrict SID History usage to prevent abuse.
+
+5. Conclusion
+
+Understanding these attack techniques enables penetration testers and defenders to proactively identify and mitigate security risks in Active Directory. Regular audits, proper permission management, and real-time monitoring are key strategies in defending against these advanced AD threats.
+
+6. References
+
+BloodHound
+
+Mimikatz
+
+Microsoft Security Documentation
+
+This paper serves as a checklist for penetration testers and security teams to better understand and defend against modern Active Directory attack techniques.
+
